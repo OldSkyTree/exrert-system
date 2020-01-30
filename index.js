@@ -2,16 +2,15 @@
 
 const fs = require('fs');
 
-const print = require('./print');
 const Input = require('./input');
 const WorkMemory = require('./work-memory');
 const KnowledgeBase = require('./knowledge-base');
 
-const main = () => {
+const main = async () => {
     const exams = JSON.parse(fs.readFileSync('./exams.json'));
     const input = new Input(exams);
 
-    input.init();
+    await input.init();
     
     const memory = new WorkMemory();
     const knowledgeBase = new KnowledgeBase(input, memory);
@@ -23,9 +22,7 @@ const main = () => {
         currentRule = knowledgeBase.getRule(currentRule).action();
     }
     knowledgeBase.printRule(currentRule);
-
-    // console.log(memory);
 };
 
 // точка входа
-main();
+(() => main())();

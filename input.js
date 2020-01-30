@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const readline = require('readline');
 
 const print = require('./print');
 
@@ -13,20 +14,52 @@ module.exports = class Input {
         this._theoryScore = null;
     }
 
-    init() {
-        print(`У нас есть информация о следующих предметах: ${this._exams.map(exam => `"${exam.name}"`).join(', ')}`);
-        print('С каким из них хотите продолжить?');
-        print(`Выбран: "${this._exams[0].name}"`);
-        this._examId = 0;
+    async init() {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
 
-        print('Сколько лабораторных от общего колличества вы сдали? (в процентах) (0-100)');
-        this._labPercentage = 0.5;
+        await new Promise((resolve, reject) => {
+            print(`У нас есть информация о следующих предметах: ${this._exams.map(exam => `"${exam.name}"`).join(', ')}`);
+            rl.question('С каким из них хотите продолжить?', (answer) => {
+                const id = _.findIndex(this._exams, ({ name }) => name === answer);
 
-        print(`Насколько завершена ${this._exams[this._examId].mainJob}? (в процентах) (0-100)`);
-        this._mainJobPercentage = 0.7;
+                if (id === -1) reject('error');
 
-        print('Как хорошо вы сдали тест по теории? (0-100)');
-        this._theoryScore = 90;
+                print(`Выбран: "${answer}"`);
+                this._examId = id;
+
+                resolve();
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                rl.question('Сколько лабораторных от общего колличества вы сдали? (в процентах) (0-100)', (answer) => {
+                    print(`Выбран: "${answer}"`);
+                    this._labPercentage = Number.parseFloat(answer/100);
+
+                    resolve();
+                });
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                rl.question(`Насколько завершена ${this._exams[this._examId].mainJob}? (в процентах) (0-100)`, (answer) => {
+                    print(`Выбран: "${answer}"`);
+                    this._mainJobPercentage = Number.parseFloat(answer/100);
+
+                    resolve();
+                });
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                rl.question('Как хорошо вы сдали тест по теории? (0-100)', (answer) => {
+                    print(`Выбран: "${answer}"`);
+                    this._theoryScore = Number.parseInt(answer);
+
+                    resolve();
+                });
+            });
+        }).finally(() => rl.close());
     }
 
     get exam() {
