@@ -1,0 +1,13 @@
+[{
+    "name": "Интеллектуальные системы",
+    "mainJob": "курсовая работа",
+    "labReq": 0.8,
+    "mainJobReq": 0.5,
+    "theoryReq": 90
+}, {
+    "name":"Инженерия ПО",
+    "mainJob": "РГЗ",
+    "labReq": 0.8,
+    "mainJobReq": 0.9,
+    "theoryReq": 60
+}]
